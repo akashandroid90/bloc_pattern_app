@@ -1,6 +1,9 @@
+import 'package:bloc_pattern_app/counter.dart';
 import 'package:bloc_pattern_app/counter_bloc.dart';
-import 'package:bloc_pattern_app/counter_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'counter_bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,57 +33,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _bloc = CounterBloc();
-
+  final _counterBloc = CounterBloc();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: StreamBuilder(
-          stream: _bloc.counter,
-          initialData: 0,
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'You have pushed the button this many times:',
-                  ),
-                  Text(
-                    snapshot.data.toString(),
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                ],
-              ),
-            );
-          }),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          FloatingActionButton(
-            onPressed: () => {_bloc.counterEventSink.add(IncrementEvent())},
-            tooltip: 'Increment',
-            child: Icon(Icons.add),
-          ),
-          SizedBox(
-            width: 10.0,
-          ),
-          FloatingActionButton(
-            onPressed: () => {_bloc.counterEventSink.add(DecrementEvent())},
-            tooltip: 'Decrement',
-            child: Icon(Icons.remove),
-          ),
-        ],
-      ),
+    return BlocProvider(
+      create: (_) => _counterBloc,
+      child: CounterWidget(title: widget.title),
     );
   }
 
   @override
   void dispose() {
+    _counterBloc.close();
     super.dispose();
-    _bloc.dispose();
   }
 }
